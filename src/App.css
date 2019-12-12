@@ -1,0 +1,210 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+  max-width: 800px;
+  margin: auto;
+}
+
+/* @keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+} */
+
+.app-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 60px;
+}
+
+.item-container {
+  width: 40%;
+}
+
+.card-container {
+  margin-top: 80px;
+}
+
+.item {
+  padding: 10px;
+  border: 1px solid grey;
+  margin-bottom: 20px;
+}
+
+.target {
+  width: 50%;
+  min-height: 200px;
+  border: 1px solid grey;
+}
+
+.text-input{
+  overflow: hidden;
+    background-color: transparent;
+    font-size: 16px;
+    line-height: 1.32;
+    color: #000000;
+    height: 89px;
+    padding: 7px 9px;
+    white-space: pre-wrap;
+    margin: 0;
+    border-radius: 7px;
+    top: 0;
+}
+
+.emoji-picker{
+    position: absolute;
+    top: 109px;
+    left: 0px;
+    z-index: 100;
+}
+
+
+
+.text-limit{
+  font-size: 10px;
+  margin-right: 5px;
+}
+
+.input-helper{
+  justify-content: flex-end;
+    position: absolute;
+    right: 39px;
+    bottom: 21px;
+}
+.input-helper-2{
+  justify-content: flex-end;
+    position: absolute;
+    right: 36px;
+    bottom: 0px;
+}
+
+.emoji-icon{
+  cursor: pointer;
+  font-size: 15px;
+  color: gray;
+}
+
+.emoji-icon:hover{
+  color: #44C1E9;
+}
+
+.upload-image{
+  height: 144px;
+  width: 235px;
+  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.upload-text{
+  color: gray;
+  cursor: pointer;
+}
+
+.upload-text:hover{
+  color: #000000;
+}
+
+.upload-text-overlay{
+  color: gray;
+}
+
+
+.upload-text-black{
+  color: #000000;
+}
+
+.element-box{
+  height: 67px;
+  width: 84px;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.gallery-icon{
+  background-color: #A044E9;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+}
+
+.element-box-icon{
+  color: white;
+  padding: 3px;
+}
+.element-box-text{
+  font-size: 12px;
+  margin-top: 4px;
+}
+.typing-icon{
+  background-color: #E99D44;
+  border-radius: 100%;
+  width: 20px;
+  height: 20px;
+}
+.upload-header{
+  font-size: 12px;
+  border-radius: 5px;
+}
+.upload-url{
+  padding-left: 6px;
+  font-size: 10px;
+  width: 100%;
+
+}
+
+.test-input{
+  min-height: 32px;
+  font-size: 10px;
+  width: 100%;
+}
+
+textarea:focus, input:focus{
+  outline: none;
+}
+
+.image-preview{
+  height: 144px;
+  width: 235px;
+  margin-top: 10px;
+  background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.image-overlay{
+  height: 144px;
+  width: 235px;
+  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
+  background-color: #2b2b2b;
+  opacity: 0.9;
+  z-index: 100;
+}
+
+.overlayItem{
+  z-index: 30;
+  margin-right: 15px;
+}
