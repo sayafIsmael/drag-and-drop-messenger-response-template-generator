@@ -3,6 +3,10 @@ import './../App.css';
 import 'emoji-mart/css/emoji-mart.css'
 import { Picker } from 'emoji-mart'
 import { FaRegSmile, } from 'react-icons/fa';
+import OutsideClickHandler from 'react-outside-click-handler';
+import { FiTrash } from 'react-icons/fi';
+import { storeText } from '../actions/TemplateActions'
+import { connect } from "react-redux";
 
 
 class Text extends Component {
@@ -11,16 +15,20 @@ class Text extends Component {
     this.state = {
       text: '',
       showEmojiPicker: false,
-      hovered: false
+      hovered: false,
+      focusedInput: false,
+      clickedInputOnce: false,
+      cardFocused: false
     }
   }
 
 
-  
+
 
   //Input handle change
   handleChange = (e) => {
     this.setState({ text: e.target.value })
+   
   }
 
   //add emoji
@@ -32,33 +40,72 @@ class Text extends Component {
     })
   }
 
+  //Detect focus on headline
+  onFocusTextInput = (e) => {
+    e.preventDefault()
+    this.setState({ focusedInput: true, clickedInputOnce: true })
+  }
 
+  //Handle textarea outsideclik
+  handleInputOutsideClick = () => {
+    this.setState({
+      focusedInput: false,
+    })
+  }
+
+  //Detect card hover
+  onHoverCard = (e) => {
+    e.preventDefault()
+    this.setState({ cardFocused: true })
+  }
+  //Detect card hover out
+  onMouseOutCard = (e) => {
+    e.preventDefault()
+    this.setState({ cardFocused: false })
+  }
 
   render() {
     return (
-      <div className="card col-md-4 mb-3 p-2 pb-4 position-relative">
-        <textarea maxlength="640" className=" text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error"
-          spellcheck="false"
-          placeholder="Enter Text"
-          type="text"
-          onChange={this.handleChange}
-          value={this.state.text}
-        />
-        <div className="row input-helper">
-          <p className="text-success text-limit">640</p>
-          <FaRegSmile className="emoji-icon"
-            onClick={() => this.setState({ showEmojiPicker: !this.state.showEmojiPicker })}
-          />
+      <div
+        className="card col-md-4 mb-4 p-2 pb-4 position-relative"
+        onMouseOver={(e) => this.onHoverCard(e)}
+        onMouseOut={(e) => this.onMouseOutCard(e)}
+      >
+        <div className={"delete-icon " + (this.state.cardFocused ? "d-flex" : "d-none")}>
+          <FiTrash style={{ fontSize: 65 }} />
         </div>
-
-        <span className={"emoji-picker "}
-          style={{ display: this.state.showEmojiPicker === true ? 'block' : 'none' }}
+        <OutsideClickHandler
+          onOutsideClick={() => this.handleInputOutsideClick()}
         >
-          <Picker onSelect={this.addEmoji} />
-        </span>
+          <textarea maxlength="640" className={" text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error "
+            + (!(this.state.text.length > 0) && !this.state.focusedInput && this.state.clickedInputOnce ? "warning-txtInput" : null)}
+            spellcheck="false"
+            placeholder="Enter Text"
+            type="text"
+            onChange={this.handleChange}
+            value={this.state.text}
+            onFocus={this.onFocusTextInput}
+          />
+          <div className={"row input-helper " + (this.state.focusedInput ? "d-flex-inline" : "d-none")}>
+            <p className="text-success text-limit">{parseInt(640 - this.state.text.length)}</p>
+            <FaRegSmile className="emoji-icon"
+              onClick={() => this.setState({ showEmojiPicker: !this.state.showEmojiPicker })}
+            />
+          </div>
+
+          <span className={"emoji-picker " + (this.state.focusedInput ? "d-flex-inline" : "d-none")}
+            style={{ display: this.state.showEmojiPicker === true ? 'block' : 'none' }}
+          >
+            <Picker onSelect={this.addEmoji} />
+          </span>
+        </OutsideClickHandler>
       </div>
     );
   }
 }
 
-export default Text;
+const mapStateToProps = state => ({
+  data: state.data.items,
+});
+
+export default connect(mapStateToProps, { storeText })(Text);

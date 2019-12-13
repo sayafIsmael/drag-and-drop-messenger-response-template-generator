@@ -40,7 +40,7 @@
 }
 
 .card-container {
-  margin-top: 80px;
+  margin-top: 30px;
 }
 
 .item {
@@ -108,7 +108,7 @@
 
 .upload-image{
   height: 144px;
-  width: 235px;
+  width: 100%;
   margin-top: 10px;
   justify-content: center;
   align-items: center;
@@ -186,7 +186,7 @@ textarea:focus, input:focus{
 
 .image-preview{
   height: 144px;
-  width: 235px;
+  width: 100%;
   margin-top: 10px;
   background-position: center center;
     background-repeat: no-repeat;
@@ -195,7 +195,7 @@ textarea:focus, input:focus{
 
 .image-overlay{
   height: 144px;
-  width: 235px;
+  width: 90%;
   margin-top: 10px;
   justify-content: center;
   align-items: center;
@@ -226,4 +226,39 @@ textarea:focus, input:focus{
   max-width: 53%;
   margin-left: auto;
   margin-right: auto;
+}
+
+.warning-txtInput{
+  border: solid 1px #e9604a;
+  color: #e9604a;
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.07);
+}
+
+.warning-txtInput::placeholder {
+  color: red;
+  opacity: 1; /* Firefox */
+}
+
+.delete-icon{
+  cursor: pointer;
+  top: -60px;
+  padding: 32px;
+  right: -59px;
+  position: absolute;
+  margin: 0;
+  width: 130px;
+  height: 130px;
+  background: #ffffff none;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.07);
+  border: solid 1px rgba(0, 0, 0, 0.1);
+  border-radius: 100%;
+  transform: scale(0.3);
+  z-index: 150;
+  transition: opacity cubic-bezier(0.2, 0.7, 0.5, 1) 200ms, transform cubic-bezier(0.2, 0.7, 0.5, 1) 200ms;
+}
+
+.CardAddBtn{
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }

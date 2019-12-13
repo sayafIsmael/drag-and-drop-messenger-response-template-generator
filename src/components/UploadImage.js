@@ -3,7 +3,7 @@ import './../App.css';
 import 'emoji-mart/css/emoji-mart.css'
 import { Picker } from 'emoji-mart'
 import { FaRegSmile, FaCropAlt } from 'react-icons/fa';
-import { FiCamera } from 'react-icons/fi';
+import { FiCamera, FiTrash } from 'react-icons/fi';
 import { MdClose } from 'react-icons/md';
 import OutsideClickHandler from 'react-outside-click-handler';
 import ReactCrop, { makeAspectCrop } from 'react-image-crop'
@@ -44,7 +44,9 @@ class UploadImage extends Component {
                 width: 200,
                 height: 140,
             },
-            modalIsOpen: false
+            modalIsOpen: false,
+            clickedHeadlineInput: false,
+            cardFocused: false
         }
     }
 
@@ -97,7 +99,7 @@ class UploadImage extends Component {
     //Detect focus on headline
     onFocusHeadline = (e) => {
         e.preventDefault()
-        this.setState({ focusedHeadlineInput: true, focusedSubtitleInput: false })
+        this.setState({ focusedHeadlineInput: true, focusedSubtitleInput: false, clickedHeadlineInput: true })
     }
     //Detect focus on subtitle
     onFocusSubtitle = () => {
@@ -120,6 +122,7 @@ class UploadImage extends Component {
             this.setState({ file: URL.createObjectURL(e.target.files[0]), })
             this.setState({ modalIsOpen: true })
         }
+        this.inputImage.value = null;
     }
 
     //Start crop function
@@ -198,9 +201,18 @@ class UploadImage extends Component {
         this.setState({ file: this.state.croppedImageUrl })
         this.closeModal()
     }
-
     //End Crop function
 
+    //Detect card hover
+    onHoverCard = (e) => {
+        e.preventDefault()
+        this.setState({ cardFocused: true })
+    }
+    //Detect card hover out
+    onMouseOutCard = (e) => {
+        e.preventDefault()
+        this.setState({ cardFocused: false })
+    }
 
     render() {
         const { crop, croppedImageUrl, file } = this.state;
@@ -250,8 +262,15 @@ class UploadImage extends Component {
 
                 </Modal>
 
-                <div className="card col-md-4 position-relative">
-
+                <div
+                    className="card p-2 position-relative mr-4"
+                    style={{ width: 253 }}
+                    onMouseOver={(e) => this.onHoverCard(e)}
+                    onMouseOut={(e) => this.onMouseOutCard(e)}
+                >
+                    <div className={"delete-icon " + (this.state.cardFocused ? "d-flex" : "d-none")}>
+                        <FiTrash style={{ fontSize: 65 }} />
+                    </div>
                     <div className={"image-overlay position-absolute " + (this.state.file && this.state.hoveredImage ? "d-flex " : "d-none")}>
                         <div className="row ">
                             <div className="overlayItem " onClick={() => this.inputImage.click()}>
@@ -306,7 +325,9 @@ class UploadImage extends Component {
                         onOutsideClick={() => this.handleInputOutsideClick()}
                     >
                         <div className="position-relative">
-                            <textarea maxLength="80" className=" text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error"
+                            <textarea maxLength="80"
+                                className={"text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error "
+                                    + (!(this.state.headlinetxt.length > 0) && !this.state.focusedHeadlineInput && this.state.clickedHeadlineInput ? "warning-txtInput" : null)}
                                 spellCheck="false"
                                 placeholder="Heading (required)"
                                 type="text"
@@ -316,7 +337,7 @@ class UploadImage extends Component {
                                 onBlur={this.onBlurHeadline}
                             />
                             <div className={"row input-helper-2  " + (this.state.focusedHeadlineInput ? "d-flex-inline" : "d-none")}>
-                                <p className="text-success text-limit">80</p>
+                                <p className="text-success text-limit">{parseInt(80 - this.state.headlinetxt.length)}</p>
                                 <FaRegSmile className="emoji-icon"
                                     onClick={() => this.setState({ showHeadlineEmojiPicker: !this.state.showHeadlineEmojiPicker })}
                                 />
@@ -342,7 +363,7 @@ class UploadImage extends Component {
                                 onFocus={this.onFocusSubtitle}
                             />
                             <div className={"row input-helper-2" + (this.state.focusedSubtitleInput ? " d-flex-inline" : " d-none")}>
-                                <p className={"text-success text-limit"}>80</p>
+                                <p className={"text-success text-limit"}>{parseInt(80 - this.state.subtitleTxt.length)}</p>
                                 <FaRegSmile className="emoji-icon"
                                     onClick={() => this.setState({ showSubtitlEmojiePicker: !this.state.showSubtitlEmojiePicker })}
                                 />
