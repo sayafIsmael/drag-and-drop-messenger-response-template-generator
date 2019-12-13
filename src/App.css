@@ -208,3 +208,22 @@ textarea:focus, input:focus{
   z-index: 30;
   margin-right: 15px;
 }
+
+.crop-modal-header{
+  justify-content: space-between;
+}
+
+.crop-container{
+  width: 100%;
+  height: 287px;
+  background-size: contain;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.crop-preview{
+  max-width: 53%;
+  margin-left: auto;
+  margin-right: auto;
+}
