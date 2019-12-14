@@ -9,6 +9,9 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import ReactCrop, { makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
 import Modal from 'react-modal';
+import { connect } from "react-redux";
+import { editItems } from '../actions/TemplateActions'
+import ReactTooltip from 'react-tooltip'
 
 const customStyles = {
     content: {
@@ -23,19 +26,21 @@ const customStyles = {
     }
 };
 
+
+
 class UploadImage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            headlinetxt: '',
-            subtitleTxt: '',
-            urlTxt: '',
+            headlinetxt: this.props.heading,
+            subtitleTxt: this.props.subtitle,
+            urlTxt: this.props.url,
             showHeadlineEmojiPicker: false,
             showSubtitlEmojiePicker: false,
             hovered: false,
             focusedHeadlineInput: false,
             focusedSubtitleInput: false,
-            file: null,
+            file: this.props.image,
             hoveredCamera: false,
             hoveredImage: false,
             crop: {
@@ -46,23 +51,88 @@ class UploadImage extends Component {
             },
             modalIsOpen: false,
             clickedHeadlineInput: false,
-            cardFocused: false
+            cardFocused: false,
+            focusedUrlInput: false
         }
     }
+
+    /**
+ * Convert an image 
+ * to a base64 url
+ * @param  {String}   url         
+ * @param  {Function} callback    
+ * @param  {String}   [outputFormat=image/png]           
+ */
+    convertImgToBase64URL = (url, callback, outputFormat) => {
+        var img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = function () {
+            var canvas = document.createElement('CANVAS'),
+                ctx = canvas.getContext('2d'), dataURL;
+            canvas.height = img.height;
+            canvas.width = img.width;
+            ctx.drawImage(img, 0, 0);
+            dataURL = canvas.toDataURL(outputFormat);
+            if (callback) {
+                callback(dataURL);
+            }
+            canvas = null;
+
+        };
+        img.src = url;
+    }
+
+    dataURLToBase64Image = (url, callback) => {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                callback(reader.result);
+            }
+            reader.readAsDataURL(xhr.response);
+        };
+        xhr.open('GET', url);
+        xhr.responseType = 'blob';
+        xhr.send();
+    }
+
+
 
     //Input handle headline change
     handleHeadlineChange = (e) => {
         e.preventDefault()
+        let items = [...this.props.data]
+        let gallery = items[this.props.galleryIndex]
+        let galleryItems = gallery.items;
+        galleryItems[this.props.itemIndex].heading = e.target.value
+        items[this.props.galleryIndex].items = galleryItems;
+        console.log("add headline ", items)
+
+        this.props.editItems(items)
         this.setState({ headlinetxt: e.target.value })
     }
     //Input handle subtitle change
     handleSubtitleChange = (e) => {
         e.preventDefault()
+        let items = [...this.props.data]
+        let gallery = items[this.props.galleryIndex]
+        let galleryItems = gallery.items;
+        galleryItems[this.props.itemIndex].subtitle = e.target.value
+        items[this.props.galleryIndex].items = galleryItems;
+        console.log("add headline ", items)
+
+        this.props.editItems(items)
         this.setState({ subtitleTxt: e.target.value })
     }
     //Input handle url change
     handleUrlChange = (e) => {
         e.preventDefault()
+        let items = [...this.props.data]
+        let gallery = items[this.props.galleryIndex]
+        let galleryItems = gallery.items;
+        galleryItems[this.props.itemIndex].url = e.target.value
+        items[this.props.galleryIndex].items = galleryItems;
+        this.props.editItems(items)
         this.setState({ urlTxt: e.target.value })
     }
 
@@ -78,6 +148,13 @@ class UploadImage extends Component {
     addEmojiToSubtitle = (e) => {
         //console.log(e.native)
         let emoji = e.native;
+        let items = [...this.props.data]
+        let gallery = items[this.props.galleryIndex]
+        let galleryItems = gallery.items;
+        galleryItems[this.props.itemIndex].subtitle = this.state.subtitleTxt + emoji
+        items[this.props.galleryIndex].items = galleryItems;
+        this.props.editItems(items)
+
         this.setState({
             subtitleTxt: this.state.subtitleTxt + emoji
         })
@@ -99,11 +176,15 @@ class UploadImage extends Component {
     //Detect focus on headline
     onFocusHeadline = (e) => {
         e.preventDefault()
-        this.setState({ focusedHeadlineInput: true, focusedSubtitleInput: false, clickedHeadlineInput: true })
+        this.setState({ focusedUrlInput: false, focusedHeadlineInput: true, focusedSubtitleInput: false, clickedHeadlineInput: true })
     }
     //Detect focus on subtitle
     onFocusSubtitle = () => {
-        this.setState({ focusedSubtitleInput: true, focusedHeadlineInput: false })
+        this.setState({ focusedSubtitleInput: true, focusedHeadlineInput: false, focusedUrlInput: false })
+    }
+    //Detect focus on url
+    onFocusUrl = () => {
+        this.setState({ focusedSubtitleInput: false, focusedHeadlineInput: false, focusedUrlInput: true })
     }
 
     //Handle textarea outsideclik
@@ -111,6 +192,7 @@ class UploadImage extends Component {
         this.setState({
             focusedHeadlineInput: false,
             focusedSubtitleInput: false,
+            focusedUrlInput: false,
             showHeadlineEmojiPicker: false,
             showSubtitlEmojiePicker: false
         })
@@ -118,11 +200,15 @@ class UploadImage extends Component {
 
     onChangeImage = (e) => {
         e.preventDefault()
+
         if (e.target.files[0]) {
-            this.setState({ file: URL.createObjectURL(e.target.files[0]), })
+            this.convertImgToBase64URL(URL.createObjectURL(e.target.files[0]), (base64Img) => {
+                this.setState({ file: base64Img, })
+            });
             this.setState({ modalIsOpen: true })
         }
         this.inputImage.value = null;
+
     }
 
     //Start crop function
@@ -136,6 +222,16 @@ class UploadImage extends Component {
 
     closeModal = () => {
         this.setState({ modalIsOpen: false });
+        let items = [...this.props.data]
+        let gallery = items[this.props.galleryIndex]
+        let galleryItems = gallery.items;
+        galleryItems[this.props.itemIndex].image = this.state.file
+        if (this.state.croppedImageUrl) {
+            galleryItems[this.props.itemIndex].image = this.state.croppedImageUrl
+        }
+
+        items[this.props.galleryIndex].items = galleryItems;
+        this.props.editItems(items)
     }
 
     onImageLoaded = image => {
@@ -151,14 +247,17 @@ class UploadImage extends Component {
         this.makeClientCrop(crop);
     };
 
-    async makeClientCrop(crop) {
+    makeClientCrop = async (crop) => {
         if (this.imageRef && crop.width && crop.height) {
-            const croppedImageUrl = await this.getCroppedImg(
+            let croppedImageUrl = await this.getCroppedImg(
                 this.imageRef,
                 crop,
                 'newFile.jpeg'
             );
-            this.setState({ croppedImageUrl });
+            this.dataURLToBase64Image((croppedImageUrl), (base64Img) => {
+                this.setState({ croppedImageUrl: base64Img });
+            })
+
         }
     }
 
@@ -198,8 +297,10 @@ class UploadImage extends Component {
     }
 
     saveCrop = () => {
-        this.setState({ file: this.state.croppedImageUrl })
+        this.setState({ file: this.state.croppedImageUrl, })
+        console.log(this.state.croppedImageUrl)
         this.closeModal()
+
     }
     //End Crop function
 
@@ -214,10 +315,38 @@ class UploadImage extends Component {
         this.setState({ cardFocused: false })
     }
 
+    //Replace Image
+    replaceImage = () => {
+        let items = [...this.props.data]
+        let gallery = items[this.props.galleryIndex]
+        let galleryItems = gallery.items;
+        galleryItems[this.props.itemIndex].image = null
+        items[this.props.galleryIndex].items = galleryItems;
+        this.props.editItems(items)
+        this.setState({ file: null }); this.inputImage.value = null;
+
+    }
+
+    //Delete Item
+    deleteItem = () => {
+        let items = [...this.props.data]
+        let gallery = items[this.props.galleryIndex]
+        let galleryItems = gallery.items;
+        if (galleryItems.length > 1) {
+            galleryItems.splice(this.props.itemIndex, 1);
+            items[this.props.galleryIndex].items = galleryItems;
+            this.props.editItems(items)
+        }else{
+            items.splice(this.props.galleryIndex, 1);
+            this.props.editItems(items)
+        }
+    }
+
     render() {
         const { crop, croppedImageUrl, file } = this.state;
         return (
             <React.Fragment>
+                <ReactTooltip place="top"/>
                 <Modal
                     isOpen={this.state.modalIsOpen}
                     onAfterOpen={this.afterOpenModal}
@@ -228,7 +357,7 @@ class UploadImage extends Component {
 
                     <div className="row ml-2 mr-2 d-flex crop-modal-header">
                         <p>Edit Image</p>
-                        <div onClick={() => this.closeModal()}>
+                        <div onClick={() => this.setState({ modalIsOpen: false })}>
                             <MdClose
                                 style={{
                                     cursor: 'pointer',
@@ -237,7 +366,7 @@ class UploadImage extends Component {
                                 }} />
                         </div>
                     </div>
-                    <div className="crop-container" style={{ backgroundImage: `url('images/transparent.png')` }}>
+                    <div className="crop-container" style={{ backgroundImage: this.state.file }}>
                         <div className="crop-preview">
                             {this.state.file && (
                                 <ReactCrop src={this.state.file}
@@ -254,7 +383,7 @@ class UploadImage extends Component {
                     )} */}
                     <div class="row mt-2 mr-2 d-flex justify-content-end">
                         <button type="button" class="btn btn-light mr-2"
-                            onClick={() => this.closeModal()}>
+                            onClick={() => this.setState({ modalIsOpen: false })}>
                             Cancel
                             </button>
                         <button type="button" class="btn btn-danger" onClick={() => this.saveCrop()}>Done</button>
@@ -263,12 +392,15 @@ class UploadImage extends Component {
                 </Modal>
 
                 <div
-                    className="card p-2 position-relative mr-4"
+                    className="card p-2 position-relative overflow-hidden"
                     style={{ width: 253 }}
                     onMouseOver={(e) => this.onHoverCard(e)}
                     onMouseOut={(e) => this.onMouseOutCard(e)}
+                    data-tip="Drag left to change order"
                 >
-                    <div className={"delete-icon " + (this.state.cardFocused ? "d-flex" : "d-none")}>
+                    <div
+                        onClick={this.deleteItem}
+                        className={"delete-icon " + (this.state.cardFocused ? "d-flex" : "d-none")}>
                         <FiTrash style={{ fontSize: 65 }} />
                     </div>
                     <div className={"image-overlay position-absolute " + (this.state.file && this.state.hoveredImage ? "d-flex " : "d-none")}>
@@ -292,7 +424,7 @@ class UploadImage extends Component {
                                 >Crop</p>
                             </div>
                             <div className="overlayItem "
-                                onClick={() => { this.setState({ file: null }); this.inputImage.value = null; }}
+                                onClick={() => this.replaceImage()}
                             >
                                 <MdClose
                                     style={{ color: 'white' }}
@@ -306,9 +438,9 @@ class UploadImage extends Component {
                     <div
                         onMouseEnter={this.toogleHoverImage}
                         onMouseLeave={this.toogleHoverImage}
-                        className={"image-preview border " + (this.state.file ? "display-flex" : "d-none")}
+                        className={"image-preview border mb-2 " + (this.state.file ? "display-flex" : "d-none")}
                         style={{ backgroundImage: `url('${this.state.file}')` }}></div>
-                    <label className={(this.state.file ? "d-none " : "upload-image border d-flex")} htmlFor="image"
+                    <label className={(this.state.file ? "d-none " : "upload-image border d-flex")} htmlFor={"image" + this.props.index}
                         onMouseEnter={this.toogleHover}
                         onMouseLeave={this.toogleHover}
                     >
@@ -320,7 +452,7 @@ class UploadImage extends Component {
                     </label>
                     <input
                         ref={input => this.inputImage = input}
-                        type="file" className="form-control d-none" id="image" onChange={this.onChangeImage} multiple accept="image/*" />
+                        type="file" className="form-control d-none" id={"image" + this.props.index} onChange={this.onChangeImage} multiple accept="image/*" />
                     <OutsideClickHandler
                         onOutsideClick={() => this.handleInputOutsideClick()}
                     >
@@ -328,6 +460,7 @@ class UploadImage extends Component {
                             <textarea maxLength="80"
                                 className={"text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error "
                                     + (!(this.state.headlinetxt.length > 0) && !this.state.focusedHeadlineInput && this.state.clickedHeadlineInput ? "warning-txtInput" : null)}
+                                style={{ height: 58 }}
                                 spellCheck="false"
                                 placeholder="Heading (required)"
                                 type="text"
@@ -354,7 +487,9 @@ class UploadImage extends Component {
                         </div>
 
                         <div className="position-relative">
-                            <textarea maxLength="80" className=" text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error"
+                            <textarea maxLength="80" className={" text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error " +
+                                (this.state.focusedSubtitleInput ? null : "border-0")
+                            }
                                 spellCheck="false"
                                 placeholder="Subtitle or description"
                                 type="text"
@@ -378,14 +513,16 @@ class UploadImage extends Component {
                                 <Picker onSelect={this.addEmojiToSubtitle} />
                             </span>
                         </div>
+
+                        <input
+                            type="text"
+                            className={"upload-url mb-2 " + (this.state.focusedUrlInput ? null : "border-0")}
+                            placeholder="Url"
+                            value={this.state.urlTxt}
+                            onChange={this.handleUrlChange}
+                            onFocus={this.onFocusUrl}
+                        />
                     </OutsideClickHandler>
-                    <input
-                        type="text"
-                        className="upload-url mb-2"
-                        placeholder="Url"
-                        value={this.state.urlTxt}
-                        onChange={this.handleUrlChange}
-                    />
                 </div>
 
             </React.Fragment>
@@ -393,4 +530,8 @@ class UploadImage extends Component {
     }
 }
 
-export default UploadImage;
+const mapStateToProps = state => ({
+    data: state.data.items,
+});
+
+export default connect(mapStateToProps, { editItems })(UploadImage);

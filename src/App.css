@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+body{
+  background-color: #e8e8e8;
+}
+
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;
@@ -40,7 +44,25 @@
 }
 
 .card-container {
-  margin-top: 30px;
+  margin-top: 10px;
+}
+
+.gallery-container{
+  margin: 5px;
+  /* white-space: nowrap; */
+}
+
+
+
+/* Flex */
+.flex {
+  display: flex;
+  flex-wrap: nowrap; 
+  padding-top: 13px;
+
+}
+.flex-item {
+  flex: 0 0 auto;
 }
 
 .item {
@@ -164,19 +186,19 @@
   height: 20px;
 }
 .upload-header{
-  font-size: 12px;
+  font-size: 13px;
   border-radius: 5px;
 }
 .upload-url{
   padding-left: 6px;
-  font-size: 10px;
+  font-size: 13px;
   width: 100%;
 
 }
 
 .test-input{
   min-height: 32px;
-  font-size: 10px;
+  font-size: 13px;
   width: 100%;
 }
 
@@ -195,7 +217,7 @@ textarea:focus, input:focus{
 
 .image-overlay{
   height: 144px;
-  width: 90%;
+  width: 100%;
   margin-top: 10px;
   justify-content: center;
   align-items: center;

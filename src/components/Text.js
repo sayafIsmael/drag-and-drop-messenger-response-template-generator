@@ -5,7 +5,7 @@ import { Picker } from 'emoji-mart'
 import { FaRegSmile, } from 'react-icons/fa';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { FiTrash } from 'react-icons/fi';
-import { storeText } from '../actions/TemplateActions'
+import { storeText, editItems } from '../actions/TemplateActions'
 import { connect } from "react-redux";
 
 
@@ -13,7 +13,7 @@ class Text extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: '',
+      text: this.props.text,
       showEmojiPicker: false,
       hovered: false,
       focusedInput: false,
@@ -28,7 +28,12 @@ class Text extends Component {
   //Input handle change
   handleChange = (e) => {
     this.setState({ text: e.target.value })
-   
+    let item = {
+      id: this.props.id,
+      text: e.target.value,
+      type: 'text'
+    }
+    this.props.storeText(item, this.props.index)
   }
 
   //add emoji
@@ -64,14 +69,23 @@ class Text extends Component {
     this.setState({ cardFocused: false })
   }
 
+  //Delete Item
+  deleteItem = () => {
+    let items = [...this.props.data]
+    items.splice(this.props.index, 1);
+    this.props.editItems(items)
+  }
+
   render() {
     return (
       <div
-        className="card col-md-4 mb-4 p-2 pb-4 position-relative"
+        className="card col-md-3 mb-4 p-2 pb-4 position-relative"
         onMouseOver={(e) => this.onHoverCard(e)}
         onMouseOut={(e) => this.onMouseOutCard(e)}
       >
-        <div className={"delete-icon " + (this.state.cardFocused ? "d-flex" : "d-none")}>
+        <div 
+        onClick={() => this.deleteItem()}
+        className={"delete-icon " + (this.state.cardFocused ? "d-flex" : "d-none")}>
           <FiTrash style={{ fontSize: 65 }} />
         </div>
         <OutsideClickHandler
@@ -108,4 +122,4 @@ const mapStateToProps = state => ({
   data: state.data.items,
 });
 
-export default connect(mapStateToProps, { storeText })(Text);
+export default connect(mapStateToProps, { storeText, editItems })(Text);

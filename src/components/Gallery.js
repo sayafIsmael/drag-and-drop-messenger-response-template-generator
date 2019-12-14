@@ -7,7 +7,7 @@ import 'emoji-mart/css/emoji-mart.css'
 import UploadImage from './UploadImage';
 import { FaPlus } from 'react-icons/fa';
 import { connect } from "react-redux";
-import { createGalleryItem } from '../actions/TemplateActions'
+import { createGalleryItem, changeItemIndex } from '../actions/TemplateActions'
 
 const update = require('immutability-helper');
 
@@ -29,16 +29,23 @@ class Gallery extends Component {
     }
 
     moveCard = (dragIndex, hoverIndex) => {
-        const { cards } = this.state
+        const cards = [...this.props.items]
         const dragCard = cards[dragIndex]
-
-        this.setState(
-            update(this.state, {
-                cards: {
-                    $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]],
-                },
-            }),
-        )
+        let data = [...this.props.data]
+        console.log("dragIndex hoverIndex : ", dragIndex, hoverIndex)
+        console.log("old state: ", data)
+        let items = update({ cards }, {
+            cards: {
+                $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]],
+            },
+        })
+        data[this.props.index] = {
+            id: this.props.id,
+            items: items.cards,
+            type: 'gallery'
+        };
+        console.log("new state: ", data)
+        this.props.changeItemIndex(data)
     }
 
     makeGalleryItem = () => {
@@ -47,9 +54,9 @@ class Gallery extends Component {
             items: [...this.props.items, {
                 id: this.props.items[this.props.items.length - 1].id + 1,
                 image: null,
-                heading: null,
-                subtitle: null,
-                url: null
+                heading: '',
+                subtitle: '',
+                url: ''
             }],
             type: 'gallery'
         }
@@ -58,30 +65,44 @@ class Gallery extends Component {
 
     render() {
         return (
-            <div className="row ml-0  mb-2 card-container">
-                {this.props.items.map((card, i) =>
-                    (
-                        <Card
-                            key={card.id}
-                            index={card.id}
-                            id={card.id}
-                            moveCard={this.moveCard}
+            <div className="ml-0 mb-2 gallery-container flex card-container" style={{ zIndex: 200, backgroundColor: '#e8e8e8' }}>
+                {this.props.items.map((card, i) => {
+                    if (card) {
+                        return (
+                            <div className={"flex-item"}>
+                                <Card
+                                    key={card.id}
+                                    index={i}
+                                    id={card.id}
+                                    moveCard={this.moveCard}
+
+                                >
+
+                                    <UploadImage
+                                        index={card.id}
+                                        id={card.id}
+                                        image={card.image}
+                                        heading={card.heading}
+                                        subtitle={card.subtitle}
+                                        url={card.url}
+                                        itemIndex={i}
+                                        galleryIndex={this.props.index}
+
+                                    />
+                                </Card>
+                            </div>
+                        )
+                    }
+                })}
+                {this.props.items[0] &&
+                    <div className={"inline-item col-md-3"}>
+                        <div className="CardAddBtn card "
+                            onClick={() => this.makeGalleryItem()}
+                            style={{height: '98%'}}
                         >
-                            <UploadImage
-                                index={card.id}
-                                id={card.id}
-                                image={card.image}
-                                heading={card.heading}
-                                subtitle={card.subtitle}
-                                url={card.url}
-                            />
-                        </Card>
-                    ))}
-                <div className="CardAddBtn card col-md-3"
-                    onClick={() => this.makeGalleryItem()}
-                >
-                    <FaPlus style={{ color: 'gray' }}></FaPlus>
-                </div>
+                            <FaPlus style={{ color: 'gray', fontSize: 25 }}></FaPlus>
+                        </div>
+                    </div>}
             </div>
         );
     }
@@ -92,4 +113,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default connect(mapStateToProps, { createGalleryItem })(Gallery);
+export default connect(mapStateToProps, { createGalleryItem, changeItemIndex })(Gallery);

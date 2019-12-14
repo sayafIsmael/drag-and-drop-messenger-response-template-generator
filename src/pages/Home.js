@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import { changeItemIndex, editItems } from '../actions/TemplateActions'
 import './../App.css';
 import Card from './../Card';
 import HTML5Backend from 'react-dnd-html5-backend'
 import { DragDropContext } from 'react-dnd'
 import 'emoji-mart/css/emoji-mart.css'
-import UploadImage from '../components/UploadImage';
 import Text from '../components/Text';
+import Typing from '../components/Typing';
 import AddElementRow from '../components/AddElementRow';
 import { FaPlus } from 'react-icons/fa';
 import { connect } from "react-redux";
@@ -16,7 +17,7 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-     
+
     }
   }
 
@@ -30,54 +31,61 @@ class Home extends Component {
   }
 
   moveCard = (dragIndex, hoverIndex) => {
-    const { cards } = this.state
+    const cards = [...this.props.data]
     const dragCard = cards[dragIndex]
+    let newItems = update({ cards }, {
+      cards: {
+        $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]],
+      },
+    })
+    this.props.changeItemIndex(newItems.cards)
 
-    this.setState(
-      update(this.state, {
-        cards: {
-          $splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]],
-        },
-      }),
-    )
   }
 
 
   render() {
     return (
       <div className="App">
-        <div className="container-fluid">
+        <div className="container-fluid pt-2" >
           <div className="card-container">
-            {this.props.data.map((card, i) => (
-              <Card
-                key={card.id}
-                index={card.id}
-                id={card.id}
-                text={card.text}
-                moveCard={this.moveCard}
-              >
-                {card.type == 'text' && <Text
-                  id={card.id}
-                  text={card.text}
-                  index={i}
-                />}
+            {this.props.data.map((card, i) => {
+              if (card) {
+                return (
+                  <Card
+                    key={card.id}
+                    index={i}
+                    id={card.id}
+                    text={card.text}
+                    moveCard={this.moveCard}
+                    style={{ backgroundColor: '#e8e8e8' }}
+                  >
+                    {card.type == 'text' && <Text
+                      id={card.id}
+                      text={card.text}
+                      index={i}
+                    />}
 
-                {card.type == 'gallery' && <Gallery
-                  id={card.id}
-                  items={card.items}
-                  index={i}
-                />}
+                    {card.type == 'gallery' && <Gallery
+                      id={card.id}
+                      items={card.items}
+                      index={i}
+                    />}
 
-              </Card>
-            ))}
+                    {card.type == 'typing' && <Typing
+                      id={card.id}
+                      value={card.value}
+                      index={i}
+                    />}
+
+                  </Card>
+                )
+              }
+            })}
           </div>
-          <div>
-            {/* <Gallery items={[{id: 1}, {id: 2}]} /> */}
-          </div>
-
           <AddElementRow />
 
         </div>
+
       </div>
     );
   }
@@ -88,4 +96,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default DragDropContext(HTML5Backend)(connect(mapStateToProps)(Home));
+export default DragDropContext(HTML5Backend)(connect(mapStateToProps, { changeItemIndex, editItems })(Home));

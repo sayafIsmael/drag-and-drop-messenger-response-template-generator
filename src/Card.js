@@ -16,7 +16,6 @@ import flow from 'lodash/flow';
 
 const style = {
   marginBottom: '.5rem',
-  backgroundColor: 'white',
   cursor: 'move',
 };
 

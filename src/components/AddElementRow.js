@@ -3,7 +3,7 @@ import './../App.css';
 import 'emoji-mart/css/emoji-mart.css'
 import { FaAdn, FaRegImages } from 'react-icons/fa';
 import { TiMessageTyping } from 'react-icons/ti';
-import { storeText } from '../actions/TemplateActions'
+import { storeItem } from '../actions/TemplateActions'
 import { connect } from "react-redux";
 
 class Text extends Component {
@@ -18,42 +18,52 @@ class Text extends Component {
         console.log("add elements ", this.props.data)
     }
 
-    storeText = () => {
-        let id = this.props.data.length > 0 ? parseInt(this.props.data[this.props.data.length - 1].id + 1) : 1
+    storeItem = () => {
+        let id = this.props.data.length > 0 && this.props.data[this.props.data.length - 1] != null ? parseInt(this.props.data[this.props.data.length - 1].id + 1) : 1
         let text = {
             id: id,
-            text: null,
+            text: '',
             type: 'text'
         }
-        this.props.storeText(text)
+        this.props.storeItem(text)
     }
 
     storeGallery = () => {
-        let id = this.props.data.length > 0 ? parseInt(this.props.data[this.props.data.length - 1].id + 1) : 1
+        let id = this.props.data.length > 0 && this.props.data[this.props.data.length - 1] != null ? parseInt(this.props.data[this.props.data.length - 1].id + 1) : 1
         let gallery = {
             id: id,
             items: [{
                 id: 1,
                 image: null,
-                heading: null,
-                subtitle: null,
-                url: null
+                heading: '',
+                subtitle: '',
+                url: ''
             }],
             type: 'gallery'
         }
-        this.props.storeText(gallery)
+        this.props.storeItem(gallery)
+    }
+
+    storeTypingItem = () =>{
+        let id = this.props.data.length > 0 && this.props.data[this.props.data.length - 1] != null ? parseInt(this.props.data[this.props.data.length - 1].id + 1) : 1
+        let typing = {
+            id: id,
+            value: 20,
+            type: 'typing'
+        }
+        this.props.storeItem(typing)
     }
 
     render() {
         return (
             <div>
-                <div className="row m-0 mt-3">
+                <div className="row m-0 ml-2 mt-3">
                     <h4 className="align-self-start">Add Element</h4>
                 </div>
                 <div className="row m-2">
                     <div className="element-box card"
-                        onClick={() => this.storeText()}>
-                        <FaAdn style={{ color: '#44C1E9' }} />
+                        onClick={() => this.storeItem()}>
+                        <FaAdn style={{ color: '#44C1E9', fontSize: 20 }} />
                         <span className="element-box-text"
                         >Text</span>
                     </div>
@@ -65,7 +75,9 @@ class Text extends Component {
                         </div>
                         <span className="element-box-text">Gallery</span>
                     </div>
-                    <div className="element-box card">
+                    <div className="element-box card"
+                    onClick={() => this.storeTypingItem()}
+                    >
                         <div className="typing-icon">
                             <TiMessageTyping className="element-box-icon" />
                         </div>
@@ -82,4 +94,4 @@ const mapStateToProps = state => ({
 });
 
 
-export default connect(mapStateToProps, { storeText })(Text);
+export default connect(mapStateToProps, { storeItem })(Text);
