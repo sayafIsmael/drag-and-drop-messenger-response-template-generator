@@ -60,18 +60,21 @@ class Home extends Component {
                     style={{ backgroundColor: '#e8e8e8' }}
                   >
                     {card.type == 'text' && <Text
+                      key={i}
                       id={card.id}
                       text={card.text}
                       index={i}
                     />}
 
                     {card.type == 'gallery' && <Gallery
+                      key={i}
                       id={card.id}
                       items={card.items}
                       index={i}
                     />}
 
                     {card.type == 'typing' && <Typing
+                      key={i}
                       id={card.id}
                       value={card.value}
                       index={i}

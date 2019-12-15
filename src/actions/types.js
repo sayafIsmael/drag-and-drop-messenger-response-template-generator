@@ -5,3 +5,4 @@ export const STORE_TEXT = 'STORE_TEXT';
 export const CHANGE_GALLERY_INDEX = 'CHANGE_GALLERY_INDEX';
 export const CHANGE_ITEM_INDEX = 'CHANGE_ITEM_INDEX';
 export const EDIT_ITEMS = 'EDIT_ITEMS';
+export const SET_LAST_GALLERY = 'EDIT_ITEMS';
