@@ -5,7 +5,8 @@ import { FaAdn, FaRegImages } from 'react-icons/fa';
 import { TiMessageTyping } from 'react-icons/ti';
 import { storeItem } from '../actions/TemplateActions'
 import { connect } from "react-redux";
-const uniqid = require('uniqid');
+import ShortUniqueId from 'short-unique-id';
+const uid = new ShortUniqueId();
 
 class Text extends Component {
     constructor(props) {
@@ -34,7 +35,7 @@ class Text extends Component {
         let gallery = {
             id: id,
             items: [{
-                id: uniqid(),
+                id: uid.randomUUID(13),
                 image: null,
                 heading: '',
                 subtitle: '',

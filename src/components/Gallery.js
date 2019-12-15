@@ -8,7 +8,8 @@ import UploadImage from './UploadImage';
 import { FaPlus } from 'react-icons/fa';
 import { connect } from "react-redux";
 import { createGalleryItem, changeItemIndex } from '../actions/TemplateActions'
-const uniqid = require('uniqid');
+import ShortUniqueId from 'short-unique-id';
+const uid = new ShortUniqueId();
 
 const update = require('immutability-helper');
 
@@ -53,7 +54,7 @@ class Gallery extends Component {
         let item = {
             id: this.props.id,
             items: [...this.props.items, {
-                id: uniqid(),
+                id: uid.randomUUID(13),
                 image: null,
                 heading: '',
                 subtitle: '',
