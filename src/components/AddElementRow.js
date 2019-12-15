@@ -30,10 +30,23 @@ class Text extends Component {
 
     storeGallery = () => {
         let id = this.props.data.length > 0 && this.props.data[this.props.data.length - 1] != null ? parseInt(this.props.data[this.props.data.length - 1].id + 1) : 1
+
+        let galleryItems = []
+        this.props.data.map((gallery, i) => {
+            if(gallery){
+                if (gallery.type == "gallery") {
+                    galleryItems.push(gallery.items)
+                }
+            }
+        })
+        let galleryItem = galleryItems.length > 0 ? galleryItems[galleryItems.length - 1] : null;
+        let galleryIndex = galleryItem ? parseInt(galleryItem[galleryItem.length - 1].id + 1) : null
+
+
         let gallery = {
             id: id,
             items: [{
-                id: 1,
+                id: galleryIndex ? galleryIndex : 1,
                 image: null,
                 heading: '',
                 subtitle: '',
@@ -44,7 +57,7 @@ class Text extends Component {
         this.props.storeItem(gallery)
     }
 
-    storeTypingItem = () =>{
+    storeTypingItem = () => {
         let id = this.props.data.length > 0 && this.props.data[this.props.data.length - 1] != null ? parseInt(this.props.data[this.props.data.length - 1].id + 1) : 1
         let typing = {
             id: id,
@@ -76,7 +89,7 @@ class Text extends Component {
                         <span className="element-box-text">Gallery</span>
                     </div>
                     <div className="element-box card"
-                    onClick={() => this.storeTypingItem()}
+                        onClick={() => this.storeTypingItem()}
                     >
                         <div className="typing-icon">
                             <TiMessageTyping className="element-box-icon" />
