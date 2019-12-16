@@ -226,7 +226,7 @@ class UploadImage extends Component {
         let gallery = items[this.props.galleryIndex]
         let galleryItems = gallery.items;
         galleryItems[this.props.itemIndex].image = this.state.file
-        if (this.state.croppedImageUrl && canceledit) {
+        if (this.state.croppedImageUrl && !canceledit) {
             galleryItems[this.props.itemIndex].image = this.state.croppedImageUrl
         }
 
