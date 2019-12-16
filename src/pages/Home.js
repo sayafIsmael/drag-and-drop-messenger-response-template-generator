@@ -66,7 +66,7 @@ class Home extends Component {
                       index={i}
                     />}
 
-                    {card.type == 'gallery' && <Gallery
+                    {card.type == 'gallery' && card.items[0] && <Gallery
                       key={i}
                       id={card.id}
                       items={card.items}
