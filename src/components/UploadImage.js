@@ -204,8 +204,8 @@ class UploadImage extends Component {
         if (e.target.files[0]) {
             this.convertImgToBase64URL(URL.createObjectURL(e.target.files[0]), (base64Img) => {
                 this.setState({ file: base64Img, })
+                this.setState({ modalIsOpen: true })
             });
-            this.setState({ modalIsOpen: true })
         }
         this.inputImage.value = null;
 
@@ -220,13 +220,13 @@ class UploadImage extends Component {
         // references are now sync'd and can be accessed.
     }
 
-    closeModal = () => {
+    closeModal = (canceledit = false) => {
         this.setState({ modalIsOpen: false });
         let items = [...this.props.data]
         let gallery = items[this.props.galleryIndex]
         let galleryItems = gallery.items;
         galleryItems[this.props.itemIndex].image = this.state.file
-        if (this.state.croppedImageUrl) {
+        if (this.state.croppedImageUrl && canceledit) {
             galleryItems[this.props.itemIndex].image = this.state.croppedImageUrl
         }
 
@@ -383,7 +383,7 @@ class UploadImage extends Component {
                     )} */}
                     <div class="row mt-2 mr-2 d-flex justify-content-end">
                         <button type="button" class="btn btn-light mr-2"
-                            onClick={() => this.setState({ modalIsOpen: false })}>
+                            onClick={() => this.closeModal(true)}>
                             Cancel
                             </button>
                         <button type="button" class="btn btn-danger" onClick={() => this.saveCrop()}>Done</button>
