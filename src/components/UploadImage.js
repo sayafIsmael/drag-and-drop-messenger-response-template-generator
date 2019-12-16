@@ -82,21 +82,6 @@ class UploadImage extends Component {
         img.src = url;
     }
 
-    dataURLToBase64Image = (url, callback) => {
-        var xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-            var reader = new FileReader();
-            reader.onloadend = function () {
-                callback(reader.result);
-            }
-            reader.readAsDataURL(xhr.response);
-        };
-        xhr.open('GET', url);
-        xhr.responseType = 'blob';
-        xhr.send();
-    }
-
-
 
     //Input handle headline change
     handleHeadlineChange = (e) => {
@@ -200,7 +185,6 @@ class UploadImage extends Component {
 
     onChangeImage = (e) => {
         e.preventDefault()
-
         if (e.target.files[0]) {
             this.convertImgToBase64URL(URL.createObjectURL(e.target.files[0]), (base64Img) => {
                 this.setState({ file: base64Img, })
@@ -254,7 +238,7 @@ class UploadImage extends Component {
                 crop,
                 'newFile.jpeg'
             );
-            this.dataURLToBase64Image((croppedImageUrl), (base64Img) => {
+            this.convertImgToBase64URL((croppedImageUrl), (base64Img) => {
                 this.setState({ croppedImageUrl: base64Img });
             })
 
@@ -350,14 +334,14 @@ class UploadImage extends Component {
                 <Modal
                     isOpen={this.state.modalIsOpen}
                     onAfterOpen={this.afterOpenModal}
-                    onRequestClose={this.closeModal}
+                    onRequestClose={() => this.closeModal(true)}
                     style={customStyles}
                     contentLabel="Example Modal"
                 >
 
                     <div className="row ml-2 mr-2 d-flex crop-modal-header">
                         <p>Edit Image</p>
-                        <div onClick={() => this.setState({ modalIsOpen: false })}>
+                        <div onClick={() => this.closeModal(true)}>
                             <MdClose
                                 style={{
                                     cursor: 'pointer',
