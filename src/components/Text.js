@@ -7,6 +7,7 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import { FiTrash } from 'react-icons/fi';
 import { storeText, editItems } from '../actions/TemplateActions'
 import { connect } from "react-redux";
+import TextareaAutosize from 'react-autosize-textarea';
 
 
 class Text extends Component {
@@ -91,7 +92,7 @@ class Text extends Component {
         <OutsideClickHandler
           onOutsideClick={() => this.handleInputOutsideClick()}
         >
-          <textarea maxlength="640" className={" text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error "
+          <TextareaAutosize maxlength="640" className={" text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error "
             + (!(this.state.text.length > 0) && !this.state.focusedInput && this.state.clickedInputOnce ? "warning-txtInput" : null)}
             spellcheck="false"
             placeholder="Enter Text"
@@ -99,6 +100,7 @@ class Text extends Component {
             onChange={this.handleChange}
             value={this.state.text}
             onFocus={this.onFocusTextInput}
+            style={{ minHeight: 32}}
           />
           <div className={"row input-helper " + (this.state.focusedInput ? "d-flex-inline" : "d-none")}>
             <p className="text-success text-limit">{parseInt(640 - this.state.text.length)}</p>

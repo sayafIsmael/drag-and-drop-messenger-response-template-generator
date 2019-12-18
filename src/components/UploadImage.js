@@ -12,6 +12,7 @@ import Modal from 'react-modal';
 import { connect } from "react-redux";
 import { editItems } from '../actions/TemplateActions'
 import ReactTooltip from 'react-tooltip'
+import TextareaAutosize from 'react-autosize-textarea';
 
 const customStyles = {
     content: {
@@ -320,7 +321,7 @@ class UploadImage extends Component {
             galleryItems.splice(this.props.itemIndex, 1);
             items[this.props.galleryIndex].items = galleryItems;
             this.props.editItems(items)
-        }else{
+        } else {
             items.splice(this.props.galleryIndex, 1);
             this.props.editItems(items)
         }
@@ -330,7 +331,7 @@ class UploadImage extends Component {
         const { crop, croppedImageUrl, file } = this.state;
         return (
             <React.Fragment>
-                <ReactTooltip place="top"/>
+                <ReactTooltip place="top" />
                 <Modal
                     isOpen={this.state.modalIsOpen}
                     onAfterOpen={this.afterOpenModal}
@@ -441,10 +442,10 @@ class UploadImage extends Component {
                         onOutsideClick={() => this.handleInputOutsideClick()}
                     >
                         <div className="position-relative">
-                            <textarea maxLength="80"
+                            <TextareaAutosize maxLength="80"
                                 className={"text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error "
                                     + (!(this.state.headlinetxt.length > 0) && !this.state.focusedHeadlineInput && this.state.clickedHeadlineInput ? "warning-txtInput" : null)}
-                                style={{ height: 58 }}
+                                style={{ minHeight: 60 }}
                                 spellCheck="false"
                                 placeholder="Heading (required)"
                                 type="text"
@@ -471,7 +472,7 @@ class UploadImage extends Component {
                         </div>
 
                         <div className="position-relative">
-                            <textarea maxLength="80" className={" text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error " +
+                            <TextareaAutosize maxLength="80" className={" text-input test-input ng-valid ng-valid-maxlength ng-touched ng-dirty ng-valid-parse ng-empty error " +
                                 (this.state.focusedSubtitleInput ? null : "border-0")
                             }
                                 spellCheck="false"
@@ -480,6 +481,7 @@ class UploadImage extends Component {
                                 onChange={this.handleSubtitleChange}
                                 value={this.state.subtitleTxt}
                                 onFocus={this.onFocusSubtitle}
+                                style={{ minHeight: 60 }}
                             />
                             <div className={"row input-helper-2" + (this.state.focusedSubtitleInput ? " d-flex-inline" : " d-none")}>
                                 <p className={"text-success text-limit"}>{parseInt(80 - this.state.subtitleTxt.length)}</p>
